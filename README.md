@@ -1,4 +1,4 @@
-#  Library Management API
+# Library Management API
 
 A complete RESTful API for managing library operations, built with Spring Boot and Java. This API allows you to manage books, members, and book loans in a library system.
 
@@ -6,18 +6,17 @@ A complete RESTful API for managing library operations, built with Spring Boot a
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2.2-brightgreen)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+## Features
 
-##  Features
-
--  Book Management: CRUD operations for books
--  Member Management: Register, update, and manage library members
--  Loan System: Track book borrowing and returns
--  Search Functionality: Search books by title or author
--  Validation: Input validation for all endpoints
+- Book Management: CRUD operations for books
+- Member Management: Register, update, and manage library members
+- Loan System: Track book borrowing and returns
+- Search Functionality: Search books by title or author
+- Validation: Input validation for all endpoints
 - In-Memory Storage: No database required for testing
 - API Documentation: Complete endpoint documentation
 
-##  Quick Start
+## Quick Start
 
 ### Prerequisites
 - Java 17 or higher
@@ -44,9 +43,9 @@ A complete RESTful API for managing library operations, built with Spring Boot a
 
 4. **The API will start at:** `http://localhost:8080`
 
-##  API Endpoints
+## API Endpoints
 
-###  Books
+### Books
 
 | Method | Endpoint | Description | Status Codes |
 |--------|----------|-------------|--------------|
@@ -57,7 +56,7 @@ A complete RESTful API for managing library operations, built with Spring Boot a
 | DELETE | `/api/books/{id}` | Delete book | 204 No Content, 404 Not Found |
 | GET | `/api/books/search` | Search books by keyword (`?q=keyword`) | 200 OK |
 
-###  Members
+### Members
 
 | Method | Endpoint | Description | Status Codes |
 |--------|----------|-------------|--------------|
@@ -68,7 +67,7 @@ A complete RESTful API for managing library operations, built with Spring Boot a
 | DELETE | `/api/members/{id}` | Deactivate member | 204 No Content, 404 Not Found |
 | POST | `/api/members/login` | Simple login simulation (`?email=user@example.com`) | 200 OK |
 
-###  Loans
+### Loans
 
 | Method | Endpoint | Description | Status Codes |
 |--------|----------|-------------|--------------|
@@ -151,7 +150,149 @@ $borrowResponse = Invoke-RestMethod -Uri "$baseUrl/loans/borrow?bookId=1&memberI
 Write-Host "Borrow response: $($borrowResponse.message)"
 ```
 
-##  Project Structure
+## Sample API Test Results
+
+Here's a demonstration of the API in action using PowerShell:
+
+### Test Commands:
+```powershell
+# Test the API
+$baseUrl = "http://localhost:8080/api"
+
+# Test 1: Get all books (should be empty initially)
+Invoke-RestMethod -Uri "$baseUrl/books" -Method Get
+
+# Test 2: Create a book
+$book = @{
+    title = "The Great Gatsby"
+    author = "F. Scott Fitzgerald"
+    isbn = "9780743273565"
+    publicationYear = 1925
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "$baseUrl/books" -Method Post -Body $book -ContentType "application/json"
+
+# Test 3: Get the book you just created
+Invoke-RestMethod -Uri "$baseUrl/books/1" -Method Get
+
+# Test 4: Create a member
+$member = @{
+    name = "John Smith"
+    email = "john@example.com"
+    phoneNumber = "555-1234"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "$baseUrl/members" -Method Post -Body $member -ContentType "application/json"
+
+# Test 5: Borrow the book
+Invoke-RestMethod -Uri "$baseUrl/loans/borrow?bookId=1&memberId=1" -Method Post
+
+# Test 6: Check active loans
+Invoke-RestMethod -Uri "$baseUrl/loans/active" -Method Get
+```
+
+### Expected Results:
+
+**Book Created Successfully:**
+```json
+{
+  "id": 1,
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "isbn": "9780743273565",
+  "publicationYear": 1925,
+  "available": true,
+  "addedDate": "2026-01-27"
+}
+```
+
+**Member Registered Successfully:**
+```json
+{
+  "id": 1,
+  "name": "John Smith",
+  "email": "john@example.com",
+  "phoneNumber": "555-1234",
+  "joinDate": "2026-01-27",
+  "borrowedBooks": [],
+  "active": true
+}
+```
+
+**Book Borrowed Successfully:**
+```json
+{
+  "message": "Book borrowed successfully",
+  "loanId": 1,
+  "dueDate": "2026-02-10"
+}
+```
+
+**Active Loan Record:**
+```json
+{
+  "id": 1,
+  "bookId": 1,
+  "memberId": 1,
+  "borrowDate": "2026-01-27",
+  "dueDate": "2026-02-10",
+  "returned": false
+}
+```
+
+### Quick Test Script:
+
+Create `quick-test.ps1`:
+```powershell
+Write-Host "Testing Library Management API"
+
+$baseUrl = "http://localhost:8080/api"
+
+# Create book
+$book = @{
+    title = "Test Book"
+    author = "Test Author"
+    isbn = "1234567890"
+    publicationYear = 2024
+} | ConvertTo-Json
+
+$bookResult = Invoke-RestMethod -Uri "$baseUrl/books" -Method Post -Body $book -ContentType "application/json"
+Write-Host "Created book: $($bookResult.title)"
+
+# Create member  
+$member = @{
+    name = "Test User"
+    email = "test@example.com"
+    phoneNumber = "555-9999"
+} | ConvertTo-Json
+
+$memberResult = Invoke-RestMethod -Uri "$baseUrl/members" -Method Post -Body $member -ContentType "application/json"
+Write-Host "Created member: $($memberResult.name)"
+
+# Borrow book
+$loanResult = Invoke-RestMethod -Uri "$baseUrl/loans/borrow?bookId=1&memberId=1" -Method Post
+Write-Host "Borrowed book. Loan ID: $($loanResult.loanId)"
+
+Write-Host "Test Complete"
+Write-Host "API is working correctly!"
+```
+
+## Troubleshooting
+
+If you experience build errors, please refer to the [HELP.md](HELP.md) file for common issues and solutions. Common problems include:
+
+- UTF-8 BOM errors in test files
+- JAVA_HOME environment variable not set correctly
+- Port 8080 already in use
+- Lombok version issues
+
+For a quick fix, you can use:
+```bash
+mvn clean install -DskipTests
+mvn spring-boot:run
+```
+
+## Project Structure
 
 ```
 src/main/java/com/daniel/library_management/
@@ -178,7 +319,7 @@ src/main/java/com/daniel/library_management/
 - **Maven**: Dependency management and build automation
 - **Java 21**: Programming language
 
-##  Testing the API
+## Testing the API
 
 ### Method 1: Using PowerShell (Recommended)
 ```powershell
@@ -196,7 +337,7 @@ src/main/java/com/daniel/library_management/
 mvn test
 ```
 
-##  Sample Data Flow
+## Sample Data Flow
 
 ```mermaid
 graph LR
@@ -208,7 +349,7 @@ graph LR
     F --> G[Client];
 ```
 
-##  Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
@@ -220,13 +361,13 @@ graph LR
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-##  Author
+## Author
 
 **Daniel Oyoo**  
 - GitHub: [@Daniel Oyoo](https://github.com/daniel-oyoo)
-- Project Link: [https://github.com/daniel-oyoo/library-management-api](https://github.com/yourusername/library-management-api)
+- Project Link: [https://github.com/daniel-oyoo/library-management-api](https://github.com/daniel-oyoo/library-management-api)
 
-##  Acknowledgments
+## Acknowledgments
 
 - Spring Boot documentation
 - Introduction to API
