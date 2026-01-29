@@ -43,6 +43,14 @@ A complete RESTful API for managing library operations, built with Spring Boot a
 
 4. **The API will start at:** `http://localhost:8080`
 
+5. **Test all end-points at once using powershell script .**
+     **Navigate to where test-all-endpoints.ps1 is located open in command line and type**
+      ```bash
+   .\test-all-endpoints.ps1
+   ```
+      **Open the file and modify the values and see whats what .**
+   
+
 ## API Endpoints
 
 ### Books
