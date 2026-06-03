@@ -1,55 +1,162 @@
 package com.daniel.library_management.service;
 
+import com.daniel.library_management.exception.DuplicateResourceException;
+import com.daniel.library_management.exception.ResourceNotFoundException;
 import com.daniel.library_management.model.Book;
+import com.daniel.library_management.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.*;
+import org.springframework.transaction.annotation.Transactional;
 
-@Service  // Marks this as a Spring Service (business logic component)
+import java.time.LocalDate;
+import java.util.List;
+
+/**
+ * Service class for Book business logic.
+ * 
+ * <p>This service handles all business operations related to books,
+ * including creation, updates, deletion, and searching. All operations
+ * are transactional to ensure data consistency.</p>
+ * 
+ * @author Daniel
+ * @version 1.0.0
+ */
+@Service
 public class BookService {
-    private Map<Long, Book> books = new HashMap<>();
-    private Long nextId = 1L;
     
-    // Add a new book
+    @Autowired
+    private BookRepository bookRepository;
+    
+    /**
+     * Adds a new book to the library.
+     * 
+     * @param book The book to add
+     * @return The added book with generated ID
+     * @throws IllegalArgumentException if book is null
+     * @throws DuplicateResourceException if book with same ISBN exists
+     */
+    @Transactional
     public Book addBook(Book book) {
-        book.setId(nextId++);
-        book.setAddedDate(java.time.LocalDate.now());
-        book.setAvailable(true);
-        books.put(book.getId(), book);
-        return book;
-    }
-    
-    // Get all books
-    public List<Book> getAllBooks() {
-        return new ArrayList<>(books.values());
-    }
-    
-    // Get book by ID
-    public Book getBookById(Long id) {
-        return books.get(id);
-    }
-    
-    // Update book
-    public Book updateBook(Long id, Book bookDetails) {
-        Book book = books.get(id);
-        if (book != null) {
-            book.setTitle(bookDetails.getTitle());
-            book.setAuthor(bookDetails.getAuthor());
-            book.setIsbn(bookDetails.getIsbn());
-            book.setPublicationYear(bookDetails.getPublicationYear());
+        if (book == null) {
+            throw new IllegalArgumentException("Book cannot be null");
         }
-        return book;
+        
+        // Check for duplicate ISBN
+        if (book.getIsbn() != null && bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
+            throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
+        }
+        
+        // Set default values
+        if (book.getId() == null) {
+            book.setId(java.util.UUID.randomUUID().toString());
+        }
+        book.setAddedDate(LocalDate.now());
+        book.setAvailable(true);
+        
+        return bookRepository.save(book);
     }
     
-    // Delete book
-    public boolean deleteBook(Long id) {
-        return books.remove(id) != null;
+    /**
+     * Retrieves all books in the library.
+     * 
+     * @return List of all books
+     */
+    @Transactional(readOnly = true)
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
     }
     
-    // Search books by title or author
+    /**
+     * Retrieves a book by its ID.
+     * 
+     * @param id The book ID (UUID)
+     * @return The book
+     * @throws ResourceNotFoundException if book not found
+     */
+    @Transactional(readOnly = true)
+    public Book getBookById(String id) {
+        return bookRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+    }
+    
+    /**
+     * Updates an existing book.
+     * 
+     * @param id The book ID
+     * @param bookDetails The updated book details
+     * @return The updated book
+     * @throws ResourceNotFoundException if book not found
+     */
+    @Transactional
+    public Book updateBook(String id, Book bookDetails) {
+        Book existingBook = getBookById(id);
+        
+        existingBook.setTitle(bookDetails.getTitle());
+        existingBook.setAuthor(bookDetails.getAuthor());
+        existingBook.setIsbn(bookDetails.getIsbn());
+        existingBook.setPublicationYear(bookDetails.getPublicationYear());
+        
+        return bookRepository.update(existingBook);
+    }
+    
+    /**
+     * Deletes a book from the library.
+     * 
+     * @param id The book ID
+     * @return true if deleted successfully
+     * @throws ResourceNotFoundException if book not found
+     */
+    @Transactional
+    public boolean deleteBook(String id) {
+        if (!bookRepository.findById(id).isPresent()) {
+            throw new ResourceNotFoundException("Book not found with id: " + id);
+        }
+        return bookRepository.deleteById(id);
+    }
+    
+    /**
+     * Searches for books by title or author.
+     * 
+     * @param keyword The search keyword
+     * @return List of matching books
+     */
+    @Transactional(readOnly = true)
     public List<Book> searchBooks(String keyword) {
-        return books.values().stream()
-            .filter(book -> book.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
-                           book.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
-            .toList();
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getAllBooks();
+        }
+        return bookRepository.search(keyword);
+    }
+    
+    /**
+     * Gets all available books.
+     * 
+     * @return List of available books
+     */
+    @Transactional(readOnly = true)
+    public List<Book> getAvailableBooks() {
+        return bookRepository.findAvailableBooks();
+    }
+    
+    /**
+     * Generates a large number of random books for testing.
+     * 
+     * @param count Number of books to generate
+     * @return Number of books generated
+     */
+    @Transactional
+    public int generateRandomBooks(int count) {
+        List<Book> books = DataGenerator.generateBooks(count);
+        return bookRepository.batchSave(books);
+    }
+    
+    /**
+     * Gets total book count.
+     * 
+     * @return Total number of books
+     */
+    @Transactional(readOnly = true)
+    public long getBookCount() {
+        return bookRepository.count();
     }
 }
