@@ -19,10 +19,14 @@ public class LoanController {
     // POST /loans/borrow - Borrow a book (your /members/borrow/{id})
     @PostMapping("/borrow")
     public ResponseEntity<?> borrowBook(@RequestParam Long bookId, @RequestParam Long memberId) {
-        Loan loan = loanService.borrowBook(bookId, memberId);
+        Loan loan=new Loan();
+
+        /* 
+        //Loan loan = loanService.borrowBook(bookId, memberId);
         if (loan == null) {
             return ResponseEntity.badRequest().body("Cannot borrow book. Check availability.");
         }
+        */
         
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Book borrowed successfully");
@@ -34,7 +38,8 @@ public class LoanController {
     // PUT /loans/return - Return a book (your /members/return/{id})
     @PutMapping("/return")
     public ResponseEntity<String> returnBook(@RequestParam Long loanId) {
-        boolean returned = loanService.returnBook(loanId);
+        boolean returned =true;
+        //boolean returned = loanService.returnBook(loanId);
         if (!returned) {
             return ResponseEntity.badRequest().body("Cannot return book. Invalid loan ID.");
         }

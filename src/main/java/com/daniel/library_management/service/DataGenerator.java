@@ -39,7 +39,7 @@ public class DataGenerator {
     };
 
     private final static String [] TOPIC ={
-     "The Secret", "Eternal Journey", "Silent Echoes"
+     "The Secret", "Eternal Journey", "Silent Echoes","Gathering Of Days","Squashed","Under The Same Sky"
     };
     
     /**

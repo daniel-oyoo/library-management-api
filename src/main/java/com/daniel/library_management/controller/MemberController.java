@@ -25,10 +25,13 @@ public class MemberController {
     // GET /members/{id} - View single member
     @GetMapping("/{id}")
     public ResponseEntity<Member> getMember(@PathVariable Long id) {
-        Member member = memberService.getMemberById(id);
+        Member member = new Member();
+        /* 
+        //Member member = memberService.getMemberById(id);
         if (member == null) {
             return ResponseEntity.notFound().build();
         }
+        */
         return ResponseEntity.ok(member);
     }
     
@@ -42,17 +45,21 @@ public class MemberController {
     // PUT /members/{id} - Update member (your /members/edit/{id})
     @PutMapping("/{id}")
     public ResponseEntity<Member> updateMember(@PathVariable Long id, @RequestBody Member memberDetails) {
-        Member updatedMember = memberService.updateMember(id, memberDetails);
+        Member updatedMember = new Member();
+        /* 
+        //Member updatedMember = memberService.updateMember(id, memberDetails);
         if (updatedMember == null) {
             return ResponseEntity.notFound().build();
         }
+        */
         return ResponseEntity.ok(updatedMember);
     }
     
     // DELETE /members/{id} - Deactivate member (your /members/delete/{id})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deactivateMember(@PathVariable Long id) {
-        boolean deactivated = memberService.deactivateMember(id);
+        boolean deactivated=true;
+        //boolean deactivated = memberService.deactivateMember(id);
         if (!deactivated) {
             return ResponseEntity.notFound().build();
         }
