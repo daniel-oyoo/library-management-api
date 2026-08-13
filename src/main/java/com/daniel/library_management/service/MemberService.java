@@ -4,6 +4,8 @@ import com.daniel.library_management.exception.DuplicateResourceException;
 import com.daniel.library_management.exception.ResourceNotFoundException;
 import com.daniel.library_management.model.Member;
 import com.daniel.library_management.repository.MemberRepository;
+import com.daniel.library_management.repository.impl.dao.MRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,7 @@ import java.util.List;
 public class MemberService {
     
     @Autowired
-    private MemberRepository memberRepository;
+    private MRepository memberRepository;
     
     /**
      * Registers a new member.
@@ -110,7 +112,8 @@ public class MemberService {
         existingMember.setEmail(memberDetails.getEmail());
         existingMember.setPhoneNumber(memberDetails.getPhoneNumber());
         
-        return memberRepository.update(existingMember);
+        //return memberRepository.update(existingMember);
+        return new Member();
     }
     
     /**
@@ -122,7 +125,8 @@ public class MemberService {
     @Transactional
     public boolean deactivateMember(String id) {
         getMemberById(id); // Ensure exists
-        return memberRepository.deactivate(id);
+        //return memberRepository.deactivate(id);
+        return true;
     }
     
     /**
@@ -132,7 +136,8 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public List<Member> getActiveMembers() {
-        return memberRepository.findActiveMembers();
+        return memberRepository.findAll();
+        //return memberRepository.findActiveMembers();
     }
     
     /**
@@ -144,11 +149,14 @@ public class MemberService {
     @Transactional
     public int generateRandomMembers(int count) {
         List<Member> members = DataGenerator.generateMembers(count);
-        int generated = memberRepository.batchSave(members);
-        
+        //int generated = memberRepository.batchSave(members);
+        for(Member member : members){
+            memberRepository.save(member);
+        }
         // Update membership IDs after generation
         // Note: In production, you'd generate membership IDs before saving
-        return generated;
+        //return generated;
+        return 1;
     }
     
     /**

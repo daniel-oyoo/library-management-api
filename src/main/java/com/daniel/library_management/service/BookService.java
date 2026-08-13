@@ -4,6 +4,8 @@ import com.daniel.library_management.exception.DuplicateResourceException;
 import com.daniel.library_management.exception.ResourceNotFoundException;
 import com.daniel.library_management.model.Book;
 import com.daniel.library_management.repository.BookRepository;
+import com.daniel.library_management.repository.impl.dao.BRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,7 @@ import java.util.List;
 public class BookService {
     
     @Autowired
-    private BookRepository bookRepository;
+    private BRepository bookRepository;
     
     /**
      * Adds a new book to the library.
@@ -42,7 +44,9 @@ public class BookService {
         }
         
         // Check for duplicate ISBN
-        if (book.getIsbn() != null && bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
+        if (book.getIsbn() != null
+        // && bookRepository.findByIsbn(book.getIsbn()).isPresent()
+        ) {
             throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
         }
         
@@ -96,7 +100,8 @@ public class BookService {
         existingBook.setIsbn(bookDetails.getIsbn());
         existingBook.setPublicationYear(bookDetails.getPublicationYear());
         
-        return bookRepository.update(existingBook);
+        /*return bookRepository.update(existingBook);*/
+        return new Book();
     }
     
     /**
@@ -111,7 +116,9 @@ public class BookService {
         if (!bookRepository.findById(id).isPresent()) {
             throw new ResourceNotFoundException("Book not found with id: " + id);
         }
-        return bookRepository.deleteById(id);
+        //boolean deleteResults=
+        bookRepository.deleteById(id);
+        return true;
     }
     
     /**
@@ -125,7 +132,8 @@ public class BookService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllBooks();
         }
-        return bookRepository.search(keyword);
+        //return bookRepository.searchBook(keyword);
+        return bookRepository.findAll();
     }
     
     /**
@@ -135,7 +143,8 @@ public class BookService {
      */
     @Transactional(readOnly = true)
     public List<Book> getAvailableBooks() {
-        return bookRepository.findAvailableBooks();
+        return bookRepository.findAll();
+        //return bookRepository.findAvailableBooks();
     }
     
     /**
@@ -147,7 +156,13 @@ public class BookService {
     @Transactional
     public int generateRandomBooks(int count) {
         List<Book> books = DataGenerator.generateBooks(count);
+        for(Book book : books){
+            bookRepository.save(book);
+        }
+        /* 
         return bookRepository.batchSave(books);
+        */
+       return 1;//placeholder
     }
     
     /**

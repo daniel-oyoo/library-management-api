@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 /**
  * Represents a Book Loan transaction in the library system.
  * 
@@ -30,6 +33,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Loan {
     
     /** Default loan period in days */
@@ -41,6 +45,7 @@ public class Loan {
     /**
      * Unique identifier for the loan transaction.
      */
+    @Id
     private String id;
     
     /**

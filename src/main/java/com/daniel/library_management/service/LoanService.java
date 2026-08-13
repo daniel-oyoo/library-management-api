@@ -6,12 +6,15 @@ import com.daniel.library_management.model.Book;
 import com.daniel.library_management.model.Loan;
 import com.daniel.library_management.model.Member;
 import com.daniel.library_management.repository.LoanRepository;
+import com.daniel.library_management.repository.impl.dao.LRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class for Loan business logic.
@@ -30,7 +33,7 @@ public class LoanService {
     private static final int MAX_BORROW_LIMIT = 5;
     
     @Autowired
-    private LoanRepository loanRepository;
+    private LRepository loanRepository;
     
     @Autowired
     private BookService bookService;
@@ -66,7 +69,8 @@ public class LoanService {
         }
         
         // Check member's borrowing limit
-        int activeLoans = loanRepository.getActiveLoanCountForMember(memberId);
+        int activeLoans=7;
+        // // = loanRepository.getActiveLoanCountForMember(memberId);
         if (activeLoans >= MAX_BORROW_LIMIT) {
             throw new BusinessRuleViolationException(
                 "Member has reached maximum borrowing limit of " + MAX_BORROW_LIMIT + " books"
@@ -115,7 +119,7 @@ public class LoanService {
         double fineAmount = loan.calculateFine();
         
         // Update loan record
-        loanRepository.returnBook(loanId, returnDate, fineAmount);
+        //loanRepository.returnBook(loanId, returnDate, fineAmount);
         
         // Update book availability
         Book book = bookService.getBookById(loan.getBookId());
@@ -137,7 +141,8 @@ public class LoanService {
      */
     @Transactional(readOnly = true)
     public List<Loan> getActiveLoans() {
-        return loanRepository.findActiveLoans();
+        return loanRepository.findAll();
+        //return loanRepository.findActiveLoans();
     }
     
     /**
@@ -159,8 +164,8 @@ public class LoanService {
      * @return List of loans
      */
     @Transactional(readOnly = true)
-    public List<Loan> getMemberLoans(String memberId) {
-        return loanRepository.findByMemberId(memberId);
+    public Optional<Loan> getMemberLoans(String memberId) {
+        return loanRepository.findById(memberId);
     }
     
     /**
@@ -171,7 +176,8 @@ public class LoanService {
      */
     @Transactional(readOnly = true)
     public List<Loan> getMemberActiveLoans(String memberId) {
-        return loanRepository.findActiveLoansByMemberId(memberId);
+        return loanRepository.findAll();
+        //return loanRepository.findActiveLoansByMemberId(memberId);
     }
     
     /**
@@ -181,6 +187,7 @@ public class LoanService {
      */
     @Transactional(readOnly = true)
     public List<Loan> getOverdueLoans() {
-        return loanRepository.findOverdueLoans();
+        return loanRepository.findAll();
+        //return loanRepository.findOverdueLoans();
     }
 }

@@ -2,15 +2,11 @@ package com.daniel.library_management.service;
 
 import com.daniel.library_management.model.Book;
 import com.daniel.library_management.model.Member;
-import com.github.javafaker.Faker;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Utility class for generating random test data.
@@ -23,8 +19,8 @@ import java.util.UUID;
  */
 @Component
 public class DataGenerator {
-    
-    private static final Faker faker = new Faker(new Locale("en"));
+
+    private static final Random random = new Random(10);//seedfor consistncy
     
     // Predefined book titles and authors for variety
     private static final String[] GENRES = {
@@ -40,6 +36,10 @@ public class DataGenerator {
     private static final String[] LAST_NAMES = {
         "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia",
         "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Wilson"
+    };
+
+    private final static String [] TOPIC ={
+     "The Secret", "Eternal Journey", "Silent Echoes"
     };
     
     /**
@@ -59,7 +59,7 @@ public class DataGenerator {
                 .isbn(generateISBN())
                 .publicationYear(generateYear())
                 .available(true)
-                .addedDate(LocalDate.now().minusDays(faker.random().nextInt(1, 365)))
+                .addedDate(LocalDate.now().minusDays(random.nextInt(1, 365)))
                 .build();
             books.add(book);
         }
@@ -77,19 +77,19 @@ public class DataGenerator {
         List<Member> members = new ArrayList<>(count);
         
         for (int i = 0; i < count; i++) {
-            String firstName = FIRST_NAMES[faker.random().nextInt(FIRST_NAMES.length)];
-            String lastName = LAST_NAMES[faker.random().nextInt(LAST_NAMES.length)];
+            String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
+            String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
             String name = firstName + " " + lastName;
             String email = firstName.toLowerCase() + "." + lastName.toLowerCase() + 
-                          faker.random().nextInt(1, 9999) + "@example.com";
+                          random.nextInt(1, 9999) + "@example.com";
             
             Member member = Member.builder()
                 .id(UUID.randomUUID().toString())
                 .name(name)
                 .email(email)
                 .membershipId(generateMembershipId())
-                .phoneNumber(faker.phoneNumber().cellPhone())
-                .joinDate(LocalDate.now().minusDays(faker.random().nextInt(1, 730)))
+                .phoneNumber(generateCellPhone())
+                .joinDate(LocalDate.now().minusDays(random.nextInt(1, 730)))
                 .active(true)
                 .build();
             members.add(member);
@@ -104,8 +104,8 @@ public class DataGenerator {
      * @return Random title
      */
     private static String generateTitle() {
-        String genre = GENRES[faker.random().nextInt(GENRES.length)];
-        String topic = faker.book().title();
+        String genre = GENRES[random.nextInt(GENRES.length)];
+        String topic = TOPIC[random.nextInt(TOPIC.length)];
         return genre + ": " + topic;
     }
     
@@ -115,8 +115,8 @@ public class DataGenerator {
      * @return Random author name
      */
     private static String generateAuthor() {
-        String firstName = FIRST_NAMES[faker.random().nextInt(FIRST_NAMES.length)];
-        String lastName = LAST_NAMES[faker.random().nextInt(LAST_NAMES.length)];
+        String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
+        String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
         return firstName + " " + lastName;
     }
     
@@ -127,10 +127,10 @@ public class DataGenerator {
      */
     private static String generateISBN() {
         return String.format("978-%03d-%03d-%03d-%d",
-            faker.random().nextInt(100, 999),
-            faker.random().nextInt(100, 999),
-            faker.random().nextInt(100, 999),
-            faker.random().nextInt(0, 9));
+            random.nextInt(100, 999),
+            random.nextInt(100, 999),
+            random.nextInt(100, 999),
+            random.nextInt(0, 9));
     }
     
     /**
@@ -140,7 +140,7 @@ public class DataGenerator {
      */
     private static int generateYear() {
         int currentYear = Year.now().getValue();
-        return faker.random().nextInt(1900, currentYear);
+        return random.nextInt(1900, currentYear);
     }
     
     /**
@@ -150,7 +150,7 @@ public class DataGenerator {
      */
     private static String generateMembershipId() {
         String year = String.valueOf(Year.now().getValue());
-        String sequence = String.format("%05d", faker.random().nextInt(1, 99999));
+        String sequence = String.format("%05d", random.nextInt(1, 99999));
         return "LIB-" + year + "-" + sequence;
     }
     
@@ -166,15 +166,22 @@ public class DataGenerator {
         for (int i = 0; i < count; i++) {
             Book book = new Book();
             book.setId(UUID.randomUUID().toString());
-            book.setTitle(faker.book().title());
-            book.setAuthor(faker.book().author());
-            book.setIsbn(faker.code().isbn13());
-            book.setPublicationYear(faker.number().numberBetween(1900, 2024));
+            book.setTitle(generateTitle());
+            book.setAuthor(generateAuthor());
+            book.setIsbn(generateISBN());
+            book.setPublicationYear(random.nextInt(1900, 2024));
             book.setAvailable(true);
-            book.setAddedDate(LocalDate.now().minusDays(faker.number().numberBetween(1, 365)));
+            book.setAddedDate(LocalDate.now().minusDays(random.nextInt(1, 365)));
             books.add(book);
         }
         
         return books;
+    }
+
+
+    public static String generateCellPhone(){
+        return "0" + (1+random.nextInt(10))+(1+random.nextInt(10))+(1+random.nextInt(10))
+        +(1+random.nextInt(10))+(1+random.nextInt(10))+(1+random.nextInt(10))+(1+random.nextInt(10))
+        +(1+random.nextInt(10))+(1+random.nextInt(10))+(1+random.nextInt(10))+(1+random.nextInt(10));
     }
 }
