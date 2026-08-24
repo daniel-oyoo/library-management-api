@@ -6,8 +6,6 @@ import com.daniel.library_management.model.Book;
 import com.daniel.library_management.model.Loan;
 import com.daniel.library_management.model.Member;
 import com.daniel.library_management.repository.LoanRepository;
-import com.daniel.library_management.repository.impl.dao.LRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

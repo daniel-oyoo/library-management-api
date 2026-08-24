@@ -33,7 +33,6 @@ import jakarta.persistence.Id;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Loan {
     
     /** Default loan period in days */
@@ -45,7 +44,6 @@ public class Loan {
     /**
      * Unique identifier for the loan transaction.
      */
-    @Id
     private String id;
     
     /**

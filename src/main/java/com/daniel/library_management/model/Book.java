@@ -32,14 +32,12 @@ import jakarta.persistence.Id;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Book {
     
     /**
      * Unique identifier for the book using UUID format.
      * Example: "123e4567-e89b-12d3-a456-426614174000"
      */
-    @Id
     private String id;
     
     /**

@@ -4,7 +4,6 @@ import com.daniel.library_management.exception.DuplicateResourceException;
 import com.daniel.library_management.exception.ResourceNotFoundException;
 import com.daniel.library_management.model.Book;
 import com.daniel.library_management.repository.BookRepository;
-import com.daniel.library_management.repository.impl.dao.BRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,7 +99,7 @@ public class BookService {
         existingBook.setIsbn(bookDetails.getIsbn());
         existingBook.setPublicationYear(bookDetails.getPublicationYear());
         
-        return bookRepository.save(existingBook);
+        return bookRepository.update(existingBook);
     }
     
     /**
@@ -152,13 +151,7 @@ public class BookService {
     @Transactional
     public int generateRandomBooks(int count) {
         List<Book> books = DataGenerator.generateBooks(count);
-        for(Book book : books){
-            bookRepository.save(book);
-        }
-        
         return bookRepository.batchSave(books);
-        
-       //return 1;//placeholder
     }
     
     /**

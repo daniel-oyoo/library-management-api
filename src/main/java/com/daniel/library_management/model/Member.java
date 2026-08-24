@@ -31,13 +31,11 @@ import jakarta.persistence.Id;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Member {
     
     /**
      * Unique identifier for the member using UUID format.
      */
-    @Id
     private String id;
     
     /**
