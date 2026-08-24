@@ -27,7 +27,7 @@ import java.util.List;
 public class MemberService {
     
     @Autowired
-    private MRepository memberRepository;
+    private MemberRepository memberRepository;
     
     /**
      * Registers a new member.
@@ -112,8 +112,7 @@ public class MemberService {
         existingMember.setEmail(memberDetails.getEmail());
         existingMember.setPhoneNumber(memberDetails.getPhoneNumber());
         
-        //return memberRepository.update(existingMember);
-        return new Member();
+        return memberRepository.save(existingMember);
     }
     
     /**
@@ -125,8 +124,7 @@ public class MemberService {
     @Transactional
     public boolean deactivateMember(String id) {
         getMemberById(id); // Ensure exists
-        //return memberRepository.deactivate(id);
-        return true;
+        return memberRepository.deactivate(id);
     }
     
     /**
@@ -136,8 +134,7 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public List<Member> getActiveMembers() {
-        return memberRepository.findAll();
-        //return memberRepository.findActiveMembers();
+       return memberRepository.findActiveMembers();
     }
     
     /**
@@ -153,10 +150,7 @@ public class MemberService {
         for(Member member : members){
             memberRepository.save(member);
         }
-        // Update membership IDs after generation
-        // Note: In production, you'd generate membership IDs before saving
-        //return generated;
-        return 1;
+        return (int)memberRepository.count();
     }
     
     /**

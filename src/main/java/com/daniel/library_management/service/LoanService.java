@@ -33,7 +33,7 @@ public class LoanService {
     private static final int MAX_BORROW_LIMIT = 5;
     
     @Autowired
-    private LRepository loanRepository;
+    private LoanRepository loanRepository;
     
     @Autowired
     private BookService bookService;
@@ -69,8 +69,7 @@ public class LoanService {
         }
         
         // Check member's borrowing limit
-        int activeLoans=7;
-        // // = loanRepository.getActiveLoanCountForMember(memberId);
+        int activeLoans = loanRepository.getActiveLoanCountForMember(memberId);
         if (activeLoans >= MAX_BORROW_LIMIT) {
             throw new BusinessRuleViolationException(
                 "Member has reached maximum borrowing limit of " + MAX_BORROW_LIMIT + " books"
@@ -141,8 +140,7 @@ public class LoanService {
      */
     @Transactional(readOnly = true)
     public List<Loan> getActiveLoans() {
-        return loanRepository.findAll();
-        //return loanRepository.findActiveLoans();
+        return loanRepository.findActiveLoans();
     }
     
     /**
@@ -176,8 +174,7 @@ public class LoanService {
      */
     @Transactional(readOnly = true)
     public List<Loan> getMemberActiveLoans(String memberId) {
-        return loanRepository.findAll();
-        //return loanRepository.findActiveLoansByMemberId(memberId);
+    return loanRepository.findActiveLoansByMemberId(memberId);
     }
     
     /**
@@ -187,7 +184,6 @@ public class LoanService {
      */
     @Transactional(readOnly = true)
     public List<Loan> getOverdueLoans() {
-        return loanRepository.findAll();
-        //return loanRepository.findOverdueLoans();
+       return loanRepository.findOverdueLoans();
     }
 }

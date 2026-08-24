@@ -10,24 +10,26 @@ import com.daniel.library_management.model.Book;
 
 @Repository
 public interface BRepository  extends JpaRepository<Book,String> {
-    //single book
+
+    //single book-creating and saving
     Book save(Book book);
+
     //find all books
     List<Book> findAll();
+
     //find by id
-    Optional<Book>findByid(String id);
-    /* 
-    //update book
-    Book updateBook(String id);
-    //delete book
-    void delete(String id);
-    //search
-    List<Book> searchBook(String keyWord);
+    Optional<Book>findById(String id);
+
+    //delete
+    void deleteById(String id);
+
+
+    List<Book> findByAuthor(String author);
+
     Optional<Book> findByIsbn(String isbn);
-    /*Book update(Book existingBook);*/
-      /*
-    @Query(value="SELECT * FROM book")
+
+    @Query("SELECT * FROM books where keyword =: keyword")
+    List<Book> searchBook(String keyword);
+
     List<Book> findAvailableBooks();
-   int batchSave(List<Book> books);*/
-   
 }

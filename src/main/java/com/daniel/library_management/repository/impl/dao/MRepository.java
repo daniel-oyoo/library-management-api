@@ -11,14 +11,11 @@ import com.daniel.library_management.model.Member;
 @Repository
 public interface MRepository  extends JpaRepository<Member,String>{
 
-    /*int batchSave(List<Member> members);*/
-
-    /*List<Member> findActiveMembers();
-
-    boolean deactivate(String id);
-
-    Member update(Member existingMember);
-*/
+    Member save(Member member);
+    Optional<Member> findById();
     Optional<Member> findByEmail(String email);
+    List<Member> findAll();
+    List<Member> findActiveMembers();
+    boolean deactivate(String id);
     
 }

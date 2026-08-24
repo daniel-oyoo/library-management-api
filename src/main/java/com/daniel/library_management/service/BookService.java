@@ -27,7 +27,7 @@ import java.util.List;
 public class BookService {
     
     @Autowired
-    private BRepository bookRepository;
+    private BookRepository bookRepository;
     
     /**
      * Adds a new book to the library.
@@ -45,7 +45,7 @@ public class BookService {
         
         // Check for duplicate ISBN
         if (book.getIsbn() != null
-        // && bookRepository.findByIsbn(book.getIsbn()).isPresent()
+         && bookRepository.findByIsbn(book.getIsbn()).isPresent()
         ) {
             throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
         }
@@ -100,8 +100,7 @@ public class BookService {
         existingBook.setIsbn(bookDetails.getIsbn());
         existingBook.setPublicationYear(bookDetails.getPublicationYear());
         
-        /*return bookRepository.update(existingBook);*/
-        return new Book();
+        return bookRepository.save(existingBook);
     }
     
     /**
@@ -116,7 +115,6 @@ public class BookService {
         if (!bookRepository.findById(id).isPresent()) {
             throw new ResourceNotFoundException("Book not found with id: " + id);
         }
-        //boolean deleteResults=
         bookRepository.deleteById(id);
         return true;
     }
@@ -132,8 +130,7 @@ public class BookService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getAllBooks();
         }
-        //return bookRepository.searchBook(keyword);
-        return bookRepository.findAll();
+        return bookRepository.search(keyword);
     }
     
     /**
@@ -143,8 +140,7 @@ public class BookService {
      */
     @Transactional(readOnly = true)
     public List<Book> getAvailableBooks() {
-        return bookRepository.findAll();
-        //return bookRepository.findAvailableBooks();
+        return bookRepository.findAvailableBooks();
     }
     
     /**
@@ -159,10 +155,10 @@ public class BookService {
         for(Book book : books){
             bookRepository.save(book);
         }
-        /* 
+        
         return bookRepository.batchSave(books);
-        */
-       return 1;//placeholder
+        
+       //return 1;//placeholder
     }
     
     /**
