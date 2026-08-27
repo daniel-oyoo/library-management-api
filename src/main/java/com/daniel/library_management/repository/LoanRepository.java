@@ -14,7 +14,7 @@ import com.daniel.library_management.model.Loan;
 public interface LoanRepository extends JpaRepository<Loan,String>{
 
 
-    @Query(value="SELECT * FROM loans",nativeQuery=true)
+    @Query(value="SELECT * FROM loans WHERE dueDate > \'2026-08-27\'",nativeQuery=true)
     List<Loan> findOverdueLoans();
 
     @Query(value="SELECT * FROM loans WHERE returnDate = NULL AND memberId=memberId ",nativeQuery=true)
