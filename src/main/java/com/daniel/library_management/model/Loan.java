@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+
+import jakarta.persistence.*;
+
 /**
  * Represents a Book Loan transaction in the library system.
  * 
@@ -30,6 +33,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name="loans")
 public class Loan {
     
     /** Default loan period in days */
@@ -41,6 +46,7 @@ public class Loan {
     /**
      * Unique identifier for the loan transaction.
      */
+    @Id
     private String id;
     
     /**
@@ -98,30 +104,5 @@ public class Loan {
         this.dueDate = LocalDate.now().plusDays(DEFAULT_LOAN_DAYS);
         this.returned = false;
         this.fineAmount = 0.0;
-    }
-    
-    /**
-     * Calculates the fine for an overdue book.
-     * 
-     * @return The fine amount based on days overdue
-     */
-    public double calculateFine() {
-        if (returned && returnDate != null && returnDate.isAfter(dueDate)) {
-            long daysOverdue = ChronoUnit.DAYS.between(dueDate, returnDate);
-            return daysOverdue * DAILY_FINE_RATE;
-        } else if (!returned && LocalDate.now().isAfter(dueDate)) {
-            long daysOverdue = ChronoUnit.DAYS.between(dueDate, LocalDate.now());
-            return daysOverdue * DAILY_FINE_RATE;
-        }
-        return 0.0;
-    }
-    
-    /**
-     * Returns the book and updates fine if applicable.
-     */
-    public void returnBook() {
-        this.returned = true;
-        this.returnDate = LocalDate.now();
-        this.fineAmount = calculateFine();
     }
 }

@@ -1,5 +1,6 @@
 package com.daniel.library_management.service;
 
+import com.daniel.library_management.domain.LoanDomain;
 import com.daniel.library_management.exception.BusinessRuleViolationException;
 import com.daniel.library_management.exception.ResourceNotFoundException;
 import com.daniel.library_management.model.Book;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,11 +111,13 @@ public class LoanService {
         if (loan.isReturned()) {
             throw new BusinessRuleViolationException("Book has already been returned");
         }
+
+        LoanDomain loanD = new LoanDomain(loan);
         
         // Return the book and calculate fine
-        loan.returnBook();
+        loanD.returnBook();
         LocalDate returnDate = LocalDate.now();
-        double fineAmount = loan.calculateFine();
+        double fineAmount = loanD.calculateFine();
         
         // Update loan record
         loanRepository.returnBook(loanId, returnDate, fineAmount);
@@ -138,7 +142,7 @@ public class LoanService {
      */
     @Transactional(readOnly = true)
     public List<Loan> getActiveLoans() {
-        return loanRepository.findActiveLoans();
+        return loanRepository.findOverdueLoans();
     }
     
     /**
@@ -174,7 +178,8 @@ public class LoanService {
     public List<Loan> getMemberActiveLoans(String memberId) {
     return loanRepository.findActiveLoansByMemberId(memberId);
     }
-    
+
+
     /**
      * Retrieves all overdue loans.
      * 

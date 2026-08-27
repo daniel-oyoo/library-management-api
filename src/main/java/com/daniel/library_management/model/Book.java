@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import jakarta.persistence.*;
+
 /**
  * Represents a Book entity in the library system.
  * 
@@ -29,12 +31,15 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name="books")
 public class Book {
     
     /**
      * Unique identifier for the book using UUID format.
      * Example: "123e4567-e89b-12d3-a456-426614174000"
      */
+    @Id
     private String id;
     
     /**

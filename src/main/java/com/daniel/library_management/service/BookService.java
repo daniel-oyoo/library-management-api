@@ -99,7 +99,7 @@ public class BookService {
         existingBook.setIsbn(bookDetails.getIsbn());
         existingBook.setPublicationYear(bookDetails.getPublicationYear());
         
-        return bookRepository.update(existingBook);
+        return bookRepository.save(existingBook);
     }
     
     /**
@@ -139,7 +139,7 @@ public class BookService {
      */
     @Transactional(readOnly = true)
     public List<Book> getAvailableBooks() {
-        return bookRepository.findAvailableBooks();
+        return bookRepository.findAll();
     }
     
     /**
@@ -151,7 +151,7 @@ public class BookService {
     @Transactional
     public int generateRandomBooks(int count) {
         List<Book> books = DataGenerator.generateBooks(count);
-        return bookRepository.batchSave(books);
+        return bookRepository.saveAll(books).size();
     }
     
     /**

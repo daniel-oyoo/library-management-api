@@ -3,7 +3,8 @@ package com.daniel.library_management.service;
 import com.daniel.library_management.exception.DuplicateResourceException;
 import com.daniel.library_management.exception.ResourceNotFoundException;
 import com.daniel.library_management.model.Member;
-import com.daniel.library_management.repository.MemberRepository;
+import com.daniel.library_management.repository.MemberRepsoitory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ import java.util.List;
 public class MemberService {
     
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberRepsoitory memberRepository;
     
     /**
      * Registers a new member.
@@ -110,7 +111,7 @@ public class MemberService {
         existingMember.setEmail(memberDetails.getEmail());
         existingMember.setPhoneNumber(memberDetails.getPhoneNumber());
         
-        return memberRepository.update(existingMember);
+        return memberRepository.save(existingMember);
     }
     
     /**
@@ -144,7 +145,7 @@ public class MemberService {
     @Transactional
     public int generateRandomMembers(int count) {
         List<Member> members = DataGenerator.generateMembers(count);
-        int generated = memberRepository.batchSave(members);
+        int generated =(int) memberRepository.saveAll(members).stream().count();
         return generated;
     }
     

@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 
 /**
  * Represents a Library Member entity.
@@ -29,11 +33,14 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name="members")
 public class Member {
     
     /**
      * Unique identifier for the member using UUID format.
      */
+    @Id
     private String id;
     
     /**
