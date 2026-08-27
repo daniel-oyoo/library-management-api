@@ -123,7 +123,11 @@ public class MemberService {
     @Transactional
     public boolean deactivateMember(String id) {
         getMemberById(id); // Ensure exists
-        return memberRepository.deactivate(id);
+         if(memberRepository.deactivate(id)>0){
+           return true;
+         }
+
+         return false;
     }
     
     /**

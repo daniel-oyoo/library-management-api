@@ -14,7 +14,7 @@ public interface MemberRepsoitory extends JpaRepository<Member,String>{
     Optional<Member> findByEmail(String email);
 
     @Query(value ="UPDATE  members SET active = false WHERE id = id ",nativeQuery=true)
-    boolean deactivate(@Param("id")String id);
+    int deactivate(@Param("id")String id);
 
     @Query(value ="SELECT * FROM members WHERE active = true ",nativeQuery=true)
     List<Member> findActiveMembers();}
