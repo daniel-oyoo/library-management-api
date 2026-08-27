@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 /**
  * Represents a Book entity in the library system.
  * 

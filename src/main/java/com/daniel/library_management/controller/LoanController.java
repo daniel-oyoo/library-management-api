@@ -16,17 +16,14 @@ public class LoanController {
     @Autowired
     private LoanService loanService;
     
-    // POST /loans/borrow - Borrow a book (your /members/borrow/{id})
+    // POST /loans/borrow
     @PostMapping("/borrow")
-    public ResponseEntity<?> borrowBook(@RequestParam Long bookId, @RequestParam Long memberId) {
-        Loan loan=new Loan();
+    public ResponseEntity<?> borrowBook(@RequestParam String bookId, @RequestParam String memberId) {
+        Loan loan=loanService.borrowBook(bookId,memberId);
 
-        /* 
-        //Loan loan = loanService.borrowBook(bookId, memberId);
         if (loan == null) {
             return ResponseEntity.badRequest().body("Cannot borrow book. Check availability.");
         }
-        */
         
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Book borrowed successfully");
@@ -35,14 +32,15 @@ public class LoanController {
         return ResponseEntity.ok(response);
     }
     
-    // PUT /loans/return - Return a book (your /members/return/{id})
+    // PUT /loans/return
     @PutMapping("/return")
-    public ResponseEntity<String> returnBook(@RequestParam Long loanId) {
-        boolean returned =true;
-        //boolean returned = loanService.returnBook(loanId);
-        if (!returned) {
+    public ResponseEntity<String> returnBook(@RequestParam String loanId) {
+        if (loanService.getLoanById(loanId)==null
+           ) {
             return ResponseEntity.badRequest().body("Cannot return book. Invalid loan ID.");
         }
+
+        Loan returned = loanService.returnBook(loanId);
         return ResponseEntity.ok("Book returned successfully");
     }
     
@@ -55,7 +53,7 @@ public class LoanController {
     
     // GET /loans/member/{memberId} - View member's active loans
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<Loan>> getMemberLoans(@PathVariable Long memberId) {
+    public ResponseEntity<List<Loan>> getMemberLoans(@PathVariable String memberId) {
         List<Loan> memberLoans = loanService.getActiveLoans().stream()
             .filter(loan -> loan.getMemberId().equals(memberId))
             .toList();

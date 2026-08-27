@@ -116,7 +116,7 @@ public class LoanService {
         double fineAmount = loan.calculateFine();
         
         // Update loan record
-        //loanRepository.returnBook(loanId, returnDate, fineAmount);
+        loanRepository.returnBook(loanId, returnDate, fineAmount);
         
         // Update book availability
         Book book = bookService.getBookById(loan.getBookId());

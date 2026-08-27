@@ -24,49 +24,46 @@ public class MemberController {
     
     // GET /members/{id} - View single member
     @GetMapping("/{id}")
-    public ResponseEntity<Member> getMember(@PathVariable Long id) {
-        Member member = new Member();
-        /* 
-        //Member member = memberService.getMemberById(id);
+    public ResponseEntity<Member> getMember(@PathVariable String id) {
+
+        Member member = memberService.getMemberById(id);
         if (member == null) {
             return ResponseEntity.notFound().build();
         }
-        */
+       
         return ResponseEntity.ok(member);
     }
     
-    // POST /members - Register new member (your /members/register)
+    // POST /members
     @PostMapping
     public ResponseEntity<Member> registerMember(@RequestBody Member member) {
         Member newMember = memberService.registerMember(member);
         return ResponseEntity.status(HttpStatus.CREATED).body(newMember);
     }
     
-    // PUT /members/{id} - Update member (your /members/edit/{id})
+    // PUT /members/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Member> updateMember(@PathVariable Long id, @RequestBody Member memberDetails) {
-        Member updatedMember = new Member();
-        /* 
-        //Member updatedMember = memberService.updateMember(id, memberDetails);
+    public ResponseEntity<Member> updateMember(@PathVariable String id, @RequestBody Member memberDetails) {
+        
+        Member updatedMember = memberService.updateMember(id, memberDetails);
         if (updatedMember == null) {
             return ResponseEntity.notFound().build();
         }
-        */
+     
         return ResponseEntity.ok(updatedMember);
     }
     
-    // DELETE /members/{id} - Deactivate member (your /members/delete/{id})
+    // DELETE /members/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deactivateMember(@PathVariable Long id) {
-        boolean deactivated=true;
-        //boolean deactivated = memberService.deactivateMember(id);
+    public ResponseEntity<Void> deactivateMember(@PathVariable String id) {
+        boolean deactivated = memberService.deactivateMember(id);
         if (!deactivated) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
     
-    // POST /members/login - Simple login simulation
+    // POST /members/login 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email) {
         // Simple authentication (in real app, use proper authentication)

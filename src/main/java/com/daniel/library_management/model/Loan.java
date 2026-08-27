@@ -8,9 +8,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 /**
  * Represents a Book Loan transaction in the library system.
  * 

@@ -110,7 +110,7 @@ public class MemberService {
         existingMember.setEmail(memberDetails.getEmail());
         existingMember.setPhoneNumber(memberDetails.getPhoneNumber());
         
-        return memberRepository.save(existingMember);
+        return memberRepository.update(existingMember);
     }
     
     /**
@@ -144,11 +144,8 @@ public class MemberService {
     @Transactional
     public int generateRandomMembers(int count) {
         List<Member> members = DataGenerator.generateMembers(count);
-        //int generated = memberRepository.batchSave(members);
-        for(Member member : members){
-            memberRepository.save(member);
-        }
-        return (int)memberRepository.count();
+        int generated = memberRepository.batchSave(members);
+        return generated;
     }
     
     /**
