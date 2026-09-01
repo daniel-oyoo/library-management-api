@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -57,16 +58,19 @@ public class Member {
      * Unique library membership ID.
      * Format: LIB-YYYY-XXXXX (where XXXXX is sequence number)
      */
+     @Column(name="membershipId")
     private String membershipId;
     
     /**
      * Member's contact phone number.
      */
+     @Column(name="phoneNumber")
     private String phoneNumber;
     
     /**
      * Date when the member joined the library.
      */
+     @Column(name="joinDate")
     private LocalDate joinDate;
     
     /**

@@ -62,6 +62,7 @@ public class Book {
      * The year the book was published.
      * Valid range: 1000 to current year + 1.
      */
+     @Column(name="publicationYear")
     private Integer publicationYear;
     
     /**
@@ -75,6 +76,7 @@ public class Book {
      * The date when the book was added to the library collection.
      * Automatically set to current date on creation.
      */
+    @Column(name="addedDate")
     private LocalDate addedDate;
     
     /**

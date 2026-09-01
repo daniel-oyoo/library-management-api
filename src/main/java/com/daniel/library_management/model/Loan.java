@@ -52,28 +52,33 @@ public class Loan {
     /**
      * ID of the book being borrowed.
      */
+     @Column(name="bookId")
     private String bookId;
     
     /**
      * ID of the member borrowing the book.
      */
+     @Column(name="memberId")
     private String memberId;
     
     /**
      * Date when the book was borrowed.
      */
+     @Column(name="borrowDate")
     private LocalDate borrowDate;
     
     /**
      * Date by which the book should be returned.
      * Calculated as borrowDate + DEFAULT_LOAN_DAYS.
      */
+     @Column(name="dueDate")
     private LocalDate dueDate;
     
     /**
      * Date when the book was actually returned.
      * Null if the book has not been returned yet.
      */
+     @Column(name="returnDate")
     private LocalDate returnDate;
     
     /**
@@ -87,6 +92,7 @@ public class Loan {
      * Amount in dollars (USD).
      */
     @Builder.Default
+     @Column(name="fineAmount")
     private Double fineAmount = 0.0;
     
     /**
