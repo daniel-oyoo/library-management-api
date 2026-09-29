@@ -63,9 +63,10 @@ public class BookController {
     }
     
     @GetMapping("/search")
-    @Operation(summary = "Search books", description = "Searches for books by title or author")
-    public ResponseEntity<List<Book>> searchBooks(@RequestParam String q) {
-        return ResponseEntity.ok(bookService.searchBooks(q));
+    @Operation(summary = "Search books", description = "Searches for books by title or author using Google Books first by default")
+    public ResponseEntity<List<Book>> searchBooks(@RequestParam String q,
+                                                @RequestParam(defaultValue = "auto") String source) {
+        return ResponseEntity.ok(bookService.searchBooks(q, source));
     }
     
     @GetMapping("/available")

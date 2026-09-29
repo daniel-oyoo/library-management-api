@@ -99,6 +99,19 @@ mvn -N io.takari:maven:wrapper
 ./mvnw clean install
 ```
 
+### 6. Google Books Lookup Fails or Times Out
+**Error:** Feign timeout or 403 from Google Books
+
+**Cause:** No internet, expired API key, or quota limit.
+
+**Solution:** The app automatically falls back to the local library results. Check that your connection is active and that `GOOGLE_BOOKS_API_KEY` is valid if you use a key.
+
+```powershell
+$env:GOOGLE_BOOKS_API_KEY = "your-key-here"
+```
+
+The search endpoint still works even without a key; it simply returns local results when Google is unavailable.
+
 ## Quick Fix Commands
 
 If you encounter build issues, use these reliable commands:

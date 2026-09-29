@@ -63,10 +63,4 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
     
-    // POST /members/login 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email) {
-        // Simple authentication (in real app, use proper authentication)
-        return ResponseEntity.ok("Login successful for: " + email);
-    }
 }

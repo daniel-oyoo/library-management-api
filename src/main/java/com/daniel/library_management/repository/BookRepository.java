@@ -13,7 +13,8 @@ import com.daniel.library_management.model.Book;
 @Repository
 public interface BookRepository extends JpaRepository<Book,String>{
 
-    @Query(value="SELECT * FROM books WHERE title LIKE \'%keyword%\' OR \'author\' LIKE \'%keyword%\'",nativeQuery=true)
+    @Query("select b from Book b where lower(b.title) like lower(concat('%', :keyword, '%')) "
+        + "or lower(b.author) like lower(concat('%', :keyword, '%'))")
     List<Book> search(@Param("keyword")String keyword);
 
     Optional<Book> findByIsbn(String isbn);

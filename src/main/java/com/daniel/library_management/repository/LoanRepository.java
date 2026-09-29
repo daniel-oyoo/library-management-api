@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,14 +15,15 @@ import com.daniel.library_management.model.Loan;
 public interface LoanRepository extends JpaRepository<Loan,String>{
 
 
-    @Query(value="SELECT * FROM loans WHERE dueDate > \'2026-08-27\'",nativeQuery=true)
+    @Query("select l from Loan l where l.returned = false and l.dueDate < CURRENT_DATE")
     List<Loan> findOverdueLoans();
 
-    @Query(value="SELECT * FROM loans WHERE returnDate = NULL AND memberId=memberId ",nativeQuery=true)
+    @Query("select l from Loan l where l.returned = false and l.memberId = :memberId")
     List<Loan> findActiveLoansByMemberId(@Param("memberId")String memberId);
 
-     @Query(value="SELECT COUNT(*) FROM loans WHERE returnDate = NULL AND memberId=memberId ",nativeQuery=true)
+    @Query("select count(l) from Loan l where l.returned = false and l.memberId = :memberId")
     int getActiveLoanCountForMember(@Param("memberId")String memberId);
 
-    @Query(value="UPDATE loans SET returnDate=returnDate fineAmount=fineAmount WHERE loanId=loanId",nativeQuery=true)
+    @Modifying
+    @Query("update Loan l set l.returnDate = :returnDate, l.fineAmount = :fineAmount, l.returned = true where l.id = :loanId")
     void returnBook(@Param("loanId")String loanId,@Param("returnDate") LocalDate returnDate, @Param("fineAmount")double fineAmount);}

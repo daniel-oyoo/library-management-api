@@ -78,7 +78,14 @@ public class Book {
      */
     @Column(name="addedDate")
     private LocalDate addedDate;
-    
+
+    /**
+     * Source of the book data: local library records or Google Books.
+     */
+    @Builder.Default
+    @Column(name="source", nullable = false)
+    private String source = "local";
+
     /**
      * Creates a new book with auto-generated UUID and current date.
      * 
@@ -88,6 +95,7 @@ public class Book {
      * @param publicationYear Year of publication
      */
     public Book(String title, String author, String isbn, Integer publicationYear) {
+        this();
         this.id = UUID.randomUUID().toString();
         this.title = title;
         this.author = author;
