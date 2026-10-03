@@ -22,7 +22,7 @@ import java.util.List;
  * @version 1.0.0
  */
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping({"/api/v1/books", "/api/books"})
 @Tag(name = "Books", description = "Book management endpoints")
 public class BookController {
     

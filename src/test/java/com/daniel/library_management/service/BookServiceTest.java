@@ -52,7 +52,6 @@ class BookServiceTest {
             .hasMessageContaining("9780132350884");
         verify(bookRepository, never()).save(book);
     }
-
     @Test
     void newBookDefaultsToLocalSource() {
         Book book = new Book("Clean Code", "Robert C. Martin", "9780132350884", 2008);

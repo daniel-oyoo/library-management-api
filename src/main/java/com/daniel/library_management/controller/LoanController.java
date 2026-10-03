@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/loans")
+@RequestMapping({"/api/v1/loans", "/api/loans"})
 public class LoanController {
     
     @Autowired
@@ -34,14 +34,14 @@ public class LoanController {
     
     // PUT /loans/return
     @PutMapping("/return")
-    public ResponseEntity<String> returnBook(@RequestParam String loanId) {
+    public ResponseEntity<Map<String, String>> returnBook(@RequestParam String loanId) {
         if (loanService.getLoanById(loanId)==null
            ) {
-            return ResponseEntity.badRequest().body("Cannot return book. Invalid loan ID.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Cannot return book. Invalid loan ID."));
         }
 
-        Loan returned = loanService.returnBook(loanId);
-        return ResponseEntity.ok("Book returned successfully");
+        loanService.returnBook(loanId);
+        return ResponseEntity.ok(Map.of("message", "Book returned successfully"));
     }
     
     // GET /loans/active - View all active loans

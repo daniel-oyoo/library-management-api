@@ -11,6 +11,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 
 /**
@@ -47,11 +49,14 @@ public class Member {
     /**
      * Member's full name.
      */
+    @NotBlank
     private String name;
     
     /**
      * Member's email address. Must be unique.
      */
+    @NotBlank
+    @Email
     private String email;
     
     /**

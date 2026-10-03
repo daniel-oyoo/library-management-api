@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Represents a Book entity in the library system.
@@ -45,17 +48,20 @@ public class Book {
     /**
      * The title of the book. Cannot be null or empty.
      */
+    @NotBlank
     private String title;
     
     /**
      * The author(s) of the book.
      */
+    @NotBlank
     private String author;
     
     /**
      * International Standard Book Number (ISBN-10 or ISBN-13 format).
      * Must be unique across all books.
      */
+    @NotBlank
     private String isbn;
     
     /**
@@ -63,6 +69,8 @@ public class Book {
      * Valid range: 1000 to current year + 1.
      */
      @Column(name="publicationYear")
+    @NotNull
+    @Min(1000)
     private Integer publicationYear;
     
     /**

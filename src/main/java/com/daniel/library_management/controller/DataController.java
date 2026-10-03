@@ -21,7 +21,7 @@ import java.util.Map;
  * @version 1.0.0
  */
 @RestController
-@RequestMapping("/api/data")
+@RequestMapping({"/api/v1/data", "/api/data"})
 @Tag(name = "Data Generation", description = "Endpoints for generating test data")
 public class DataController {
     

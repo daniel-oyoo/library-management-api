@@ -2,6 +2,7 @@ package com.daniel.library_management.controller;
 
 import com.daniel.library_management.model.Member;
 import com.daniel.library_management.service.MemberService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping({"/api/v1/members", "/api/members"})
 public class MemberController {
     
     @Autowired
@@ -36,14 +37,14 @@ public class MemberController {
     
     // POST /members
     @PostMapping
-    public ResponseEntity<Member> registerMember(@RequestBody Member member) {
+    public ResponseEntity<Member> registerMember(@Valid @RequestBody Member member) {
         Member newMember = memberService.registerMember(member);
         return ResponseEntity.status(HttpStatus.CREATED).body(newMember);
     }
     
     // PUT /members/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Member> updateMember(@PathVariable String id, @RequestBody Member memberDetails) {
+    public ResponseEntity<Member> updateMember(@PathVariable String id, @Valid @RequestBody Member memberDetails) {
         
         Member updatedMember = memberService.updateMember(id, memberDetails);
         if (updatedMember == null) {

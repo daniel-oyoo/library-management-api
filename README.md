@@ -1,6 +1,6 @@
 # Library Management API
 
-A secured REST API for managing books, members, and loans. Built with Java 21 and Spring Boot 3.2.3, backed by Spring Data JPA and an H2 database for local development.
+A demo REST API for managing books, members, and loans. Built with Java 21 and Spring Boot 3.2.3, backed by Spring Data JPA and an H2 database for local development.
 
 ![Java 21](https://img.shields.io/badge/Java-21-007396)
 ![Spring Boot 3.2.3](https://img.shields.io/badge/Spring%20Boot-3.2.3-6DB33F)
@@ -13,159 +13,155 @@ A secured REST API for managing books, members, and loans. Built with Java 21 an
 - Member registration, updates, and soft deactivation
 - Borrowing and returning with due dates and fines
 - Transactional service operations and centralized error responses
-- HTTP Basic authentication for application endpoints
-- Swagger UI and OpenAPI documentation
-- Unit tests with Mockito and integration tests with MockMvc
-- H2 in-memory database for local development
+- Tiered request admission with versioned API routes
+- No authentication required for local demos
+- Swagger UI, OpenAPI documentation, and H2 local database
 
 ## Data Sources
 
-The application now uses a two-layer lookup strategy for book search:
+Book search uses the Google Books API first and falls back to local library data when the remote service is unavailable or returns no results. Search results identify their source as `google` or `local`; use `source=auto|google|local` to select a source.
 
-- Primary source: Google Books API
-- Fallback source: the local database/library store
-
-This makes search resilient when Google is unavailable, rate-limited, or returns no relevant matches. Google responses include a `source` value of `google`; local results use `source` as `local`.
-
-### Optional Google API key
-
-The Google Books integration is optional for local development. If you have a Google Books API key, set it before starting the app:
-
-```powershell
-$env:GOOGLE_BOOKS_API_KEY = "your-key-here"
-.\mvnw.cmd spring-boot:run
-```
-
-If no key is configured, the app still starts and will transparently fall back to the local library data.
+The Google Books API key is optional. Set `GOOGLE_BOOKS_API_KEY` before starting the application to use one. Without a key, the application still starts and can use its local fallback.
 
 ## Requirements
 
 - Java 21
-- Maven 3.9+ (or use the included Maven Wrapper)
+- Maven 3.9+ (or the included Maven Wrapper)
 - Git
 
 ## Run Locally
 
 ```powershell
-.\mvnw.cmd clean test
-.\mvnw.cmd spring-boot:run
+./mvnw.cmd clean test
+./mvnw.cmd spring-boot:run
 ```
 
-The API starts on `http://localhost:8081`.
+The API starts at `http://localhost:8081`. No login or credentials are needed. Swagger is available at `/swagger-ui.html`, and the H2 console is at `/h2-console`.
 
-The default local credentials are:
+Authentication is intentionally disabled for easy local demonstrations. Do not expose this demo to an untrusted network or use it as-is in production.
 
-- Username: `library-admin`
-- Password: `change-me`
-
-Change them before sharing or deploying the application:
-
-```powershell
-$env:LIBRARY_API_USERNAME = "admin"
-$env:LIBRARY_API_PASSWORD = "use-a-long-random-password"
-.\mvnw.cmd spring-boot:run
-```
-
-All API requests require HTTP Basic authentication. Swagger documentation is available at `/swagger-ui.html`; the H2 console is at `/h2-console` and is also protected.
-
-5. **Test all end-points at once using powershell script .**
-     **Navigate to where test-all-endpoints.ps1 is located open in command line and type**
-      ```bash
-   .\test-all-endpoints.ps1
-   ```
-      **Open the file and modify the values and see whats what .**
-   
+To exercise the endpoints, run `./test-all-endpoints.ps1` from the project directory and adjust its sample values as needed.
 
 ## API Endpoints
 
-All endpoints below are authenticated.
+API endpoints are publicly accessible in this demo. Existing routes are available under `/api/` and also under `/api/v1/`; successful versioned responses include the result and selected rate-limit tier.
 
 ### Books
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/books` | List all books |
-| GET | `/api/books/{id}` | Get one book |
-| POST | `/api/books` | Create a book |
-| PUT | `/api/books/{id}` | Update a book |
-| DELETE | `/api/books/{id}` | Delete a book |
-| GET | `/api/books/search?q=keyword` | Search by title or author (`source=auto|google|local`) |
-| GET | `/api/books/available` | List available books |
+| GET | `/api/v1/books` | List all books |
+| GET | `/api/v1/books/{id}` | Get one book |
+| POST | `/api/v1/books` | Create a book |
+| PUT | `/api/v1/books/{id}` | Update a book |
+| DELETE | `/api/v1/books/{id}` | Delete a book |
+| GET | `/api/v1/books/search?q=keyword&source=auto` | Search Google Books with local fallback |
+| GET | `/api/v1/books/available` | List available books |
 
 ### Members
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/members` | List members |
-| GET | `/api/members/{id}` | Get one member |
-| POST | `/api/members` | Register a member |
-| PUT | `/api/members/{id}` | Update a member |
-| DELETE | `/api/members/{id}` | Deactivate a member |
+| GET | `/api/v1/members` | List members |
+| GET | `/api/v1/members/{id}` | Get one member |
+| POST | `/api/v1/members` | Register a member |
+| PUT | `/api/v1/members/{id}` | Update a member |
+| DELETE | `/api/v1/members/{id}` | Deactivate a member |
 
 ### Loans
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/loans/borrow?bookId={bookId}&memberId={memberId}` | Borrow a book |
-| PUT | `/api/loans/return?loanId={loanId}` | Return a book |
-| GET | `/api/loans/active` | List active loans |
-| GET | `/api/loans/member/{memberId}` | List a member's active loans |
+| POST | `/api/v1/loans/borrow?bookId={bookId}&memberId={memberId}` | Borrow a book |
+| PUT | `/api/v1/loans/return?loanId={loanId}` | Return a book |
+| GET | `/api/v1/loans/active` | List active loans |
+| GET | `/api/v1/loans/member/{memberId}` | List a member's active loans |
+
+Successful versioned responses use an envelope such as:
+
+```json
+{"data":[],"rateLimitTier":"Tier 1 - Instant / Direct Processing"}
+```
+
+Invalid book or member payloads return HTTP 400. When all configured tier budgets are exhausted, the API returns HTTP 429 with `Retry-After` and `{"error":"Too Many Requests","message":"System saturated. Retry later."}`.
+
+## Tiered Rate Limiter
+
+The `HandlerInterceptor` greedily reserves request capacity from the instant tier, then the queue-buffer tier, then the manual/slow-buffer tier. These tiers are admission bands and response metadata; they do not dispatch work to an asynchronous queue or manual workflow. A shared fixed-window budget is replenished on the configured interval. The interceptor covers `/api/**`; actuator and Swagger documentation routes are excluded.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Interceptor as RateLimitInterceptor
+    participant Limiter as TieredRateLimiter
+    participant Controller
+    Client->>Interceptor: /api/v1 request
+    Interceptor->>Limiter: Reserve one request
+    alt A tier has capacity
+        Limiter-->>Interceptor: Selected tier
+        Interceptor->>Controller: Continue with RATE_LIMIT_TIER
+        Controller-->>Client: 2xx response with data and rateLimitTier
+    else All tiers exhausted
+        Limiter-->>Interceptor: Unhandled request
+        Interceptor-->>Client: 429 JSON and Retry-After
+    end
+```
+
+Adjust the budgets and window in `src/main/resources/application.properties`:
+
+```properties
+app.rate-limit.window-ms=60000
+app.rate-limit.retry-after-seconds=60
+app.rate-limit.tiers.instant-capacity=1000
+app.rate-limit.tiers.queue-capacity=5000
+app.rate-limit.tiers.manual-capacity=10000
+```
 
 ## Example Requests
 
-Create a book with cURL:
+Create a book:
 
 ```bash
-curl -u library-admin:change-me -X POST http://localhost:8081/api/books \
+curl -X POST http://localhost:8081/api/v1/books \
   -H "Content-Type: application/json" \
   -d '{"title":"Clean Code","author":"Robert C. Martin","isbn":"9780132350884","publicationYear":2008}'
 ```
 
-List books:
+Search Google Books with local fallback, or force a local search:
 
 ```bash
-curl -u library-admin:change-me http://localhost:8081/api/books
-```
-
-Search books through Google first, with automatic fallback:
-
-```bash
-curl -u library-admin:change-me "http://localhost:8081/api/books/search?q=harry+potter"
-curl -u library-admin:change-me "http://localhost:8081/api/books/search?q=harry+potter&source=local"
+curl "http://localhost:8081/api/v1/books/search?q=harry+potter"
+curl "http://localhost:8081/api/v1/books/search?q=harry+potter&source=local"
 ```
 
 Borrow a book:
 
 ```bash
-curl -u library-admin:change-me -X POST "http://localhost:8081/api/loans/borrow?bookId={bookId}&memberId={memberId}"
+curl -X POST "http://localhost:8081/api/v1/loans/borrow?bookId={bookId}&memberId={memberId}"
 ```
 
 ## Testing
 
-Run the complete suite:
+Run the full suite:
 
 ```powershell
-.\mvnw.cmd clean test
+./mvnw.cmd clean test
 ```
 
-The test suite includes service unit tests for duplicate ISBN handling and default book state, plus Spring Boot integration tests covering application startup, authentication enforcement, and an authenticated book workflow.
-
-## Configuration
-
-Configuration is in `src/main/resources/application.properties`. The default profile uses an H2 in-memory database. For deployment, provide `LIBRARY_API_USERNAME` and `LIBRARY_API_PASSWORD` as environment variables and use a managed database with production credentials.
-
-Do not commit passwords, tokens, or database credentials. The sample credential exists only to make local development straightforward.
+Tests cover service behavior, application startup, unauthenticated demo access, versioned response metadata, validation, tier exhaustion, and legacy route compatibility.
 
 ## Project Structure
 
 ```text
 src/main/java/com/daniel/library_management
-├── config          # HTTP security configuration
+├── config          # Rate limiter configuration
 ├── controller      # REST endpoints
 ├── exception       # API exception types and handler
+├── limiter         # Tier hierarchy and greedy limiter
 ├── model           # JPA entities
 ├── repository      # Spring Data repositories
-└── service         # Business rules and transactions
+├── service         # Business rules and transactions
+└── web             # Interceptor and versioned response envelope
 ```
 
 ## License
